@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
-
+#include <string.h>
 
 //gcc -Wall -Wextra -Werror -g -fsanitize=address -D BUFFER_SIZE=10 get_next_line.c get_next_line.h
 
