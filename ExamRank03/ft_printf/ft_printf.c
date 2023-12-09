@@ -14,27 +14,20 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-void put_string(char *str, int *len)
+int ft_printf(const char *format, ...);
+void put_string(char *str, int *len);
+void put_digit(long long int num, int base, int *len);
+
+int main()
 {
-	if (!str)
-		str = "(null)";
-	while (*str)
-		*len += write(1, str++, 1);
+	int num = 1234;
+	char *str = "hola";
+	int hex = 16;
+	ft_printf("D: %d \nS: %s\n X:%x\n", num, str, hex);
+	printf("D: %d \nS: %s\n X:%x\n", num, str, hex);
+	return (0);
 }
 
-void put_digit(long long int num, int base, int *len)
-{
-	char *hex = "0123456789abcdef";
-	
-	if (num < 0)
-	{
-		num *= -1;
-		*len += write(1,"-", 1);
-	}
-	if (num >= base)
-		put_digit((num/base), base, len);
-	*len += write(1, &hex[num % base], 1);
-}
 
 int ft_printf(const char *format, ...)
 {
@@ -62,12 +55,24 @@ int ft_printf(const char *format, ...)
 	return (va_end(pointer), len);
 }
 
-int main()
+void put_string(char *str, int *len)
 {
-	int num = 1234;
-	char *str = "hola";
-	int hex = 16;
-	ft_printf("D: %d \nS: %s\n X:%x\n", num, str, hex);
-	printf("D: %d \nS: %s\n X:%x\n", num, str, hex);
-	return (0);
+	if (!str)
+		str = "(null)";
+	while (*str)
+		*len += write(1, str++, 1);
+}
+
+void put_digit(long long int num, int base, int *len)
+{
+	char *hex = "0123456789abcdef";
+	
+	if (num < 0)
+	{
+		num *= -1;
+		*len += write(1,"-", 1);
+	}
+	if (num >= base)
+		put_digit((num/base), base, len);
+	*len += write(1, &hex[num % base], 1);
 }
