@@ -9,7 +9,7 @@ int main (int ac, char **av, char **env)
 
 	if (ac > 1)
 	{
-		while (av[i] && av[i + 1])
+		while (av[i] && av[++i])
 		{
 			av += i;
 			printf("av: %s\n", *av);
@@ -17,7 +17,7 @@ int main (int ac, char **av, char **env)
 			while (av[i] && strcmp(av[i], "|") && strcmp(av[i], ";"))//pq no || ??
 				i++;
 			printf("av: %s\n", *av);
-			if (strcmp(av[i], "cd")
+			if (strcmp(av[i], "cd") == 0)
 				status = cd(av, i);
 			else if (i)
 				status = executor(av, env, i);
