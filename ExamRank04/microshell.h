@@ -8,6 +8,6 @@
 int main(int ac, char **av, char **env);
 int cd(char **av, int i);
 int executor(char **av, char **env, int i);
-int error(char *str);
+int err(char *str);
 
 #endif
