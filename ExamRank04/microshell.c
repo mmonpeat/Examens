@@ -59,10 +59,10 @@ int executor(char **av, int i)
 		if (has_pipe && (dup2(fd[1], 1) == -1 || close(fd[0]) == -1 || close(fd[1] == -1))
 				return (err("error: fatal\n"));
 		execve(*av, av, env);
-		return (error("error: cannot execute ", err(*av), err("\n"));
+		return (error("error: cannot execute "), err(*av), err("\n"));
 	}
 	waitpid(pid, &status, 0);
-	if (has_pipe && (dup(fd[0], 0) == -1 || close(fd[0]) == -1 || close(fd[1]) == -1))
+	if (has_pipe && (dup2(fd[0], 0) == -1 || close(fd[0]) == -1 || close(fd[1]) == -1))
 		return (err("error: fatal\n");
 	return (WIFEXITED(status) && WEXITSTATUS(status));
 	//La macro WIFEXITED comprova si el procés fill ha finalitzat normalment, i WEXITSTATUS proporciona el codi de sortida del procés fill.
