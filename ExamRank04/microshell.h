@@ -5,9 +5,16 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-int main(int ac, char **av, char **env);
-int cd(char **av, int i);
-int executor(char **av, char **env, int i);
-int err(char *str);
+# define E_EXIT  1
+# define ERROR   -1
+
+typedef struct s_micro
+{
+  int i;
+  int n_p;
+  int pid;
+  int fd[2];
+  int tmp_fd;
+} t_micro;
 
 #endif
