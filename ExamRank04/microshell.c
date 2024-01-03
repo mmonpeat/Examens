@@ -1,3 +1,5 @@
+#include "microshell.h"
+
 int fd_putstr(int fd, char *str)
 {
   int i;
