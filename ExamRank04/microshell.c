@@ -18,6 +18,7 @@ typedef struct s_micro
 /* ************************************************************************** */
 /*  Fntions                                                                   */
 /* ************************************************************************** */
+#include "microshell.h"
 
 int fd_putstr(int fd, char *str)
 {
@@ -35,7 +36,7 @@ void  is_cd(t_micro *sh, char **av)
     fd_putstr(2, "error: cd: bad arguments\n");
   else if (chdir(av[1]) == ERROR)
   {
-    fd_putstr(2, "error: cd: cannot directory to ");
+    fd_putstr(2, "error: cd: cannot change directory to ");
     fd_putstr(2, av[1]);
     fd_putstr(2, "\n");
   }
@@ -94,7 +95,8 @@ int is_pipe(t_micro *sh, char **av, char **env)
   {
     close(sh->fd[1]);
     close(sh->tmp_fd);
-    sh->tmp_fd = sh->fd[0];
+    //sh->tmp_fd = sh->fd[0];
+	  sh->tmp_fd = dup(0);
   }
   return (EXIT_SUCCESS);
 }
