@@ -1,5 +1,3 @@
-#include "microshell.h"
-
 int fd_putstr(int fd, char *str)
 {
   int i;
@@ -47,7 +45,6 @@ int no_pipe(t_micro *sh, char **av, char **env)
   }
   else
   {
-    close(sh->fd[1]);
     close(sh->tmp_fd);
     while (sh->n_p-- > 0)
       waitpid(-1, NULL, WUNTRACED);
@@ -56,7 +53,6 @@ int no_pipe(t_micro *sh, char **av, char **env)
   }
   return (EXIT_SUCCESS);
 }
-
 int is_pipe(t_micro *sh, char **av, char **env)
 {
   sh->n_p++;
@@ -66,8 +62,9 @@ int is_pipe(t_micro *sh, char **av, char **env)
     return (E_EXIT);
   if (!sh->pid)
   {
-    close(sh->fd[0]);
     dup2(sh->fd[1], 1);
+    close(sh->fd[0]);
+    close(sh->fd[1]);
     if (ft_execute(sh, av, env))
       return (E_EXIT);
   }
@@ -76,9 +73,7 @@ int is_pipe(t_micro *sh, char **av, char **env)
     close(sh->fd[1]);
     close(sh->tmp_fd);
     sh->tmp_fd = sh->fd[0];
-	//sh->tmp_fd = dup(0);
   }
-	close(sh->tmp_fd);
   return (EXIT_SUCCESS);
 }
 
@@ -88,7 +83,7 @@ int main(int ac, char **av, char **env)
 
   (void)ac;
   sh.i = 0;
-  sh.n_p = 1;
+  sh.n_p = 0;
   sh.tmp_fd = dup(0);
   while (av[sh.i] && av[sh.i + 1])
   {
@@ -109,6 +104,6 @@ int main(int ac, char **av, char **env)
         return (E_EXIT);
     }
   }
-  close(sh.tmp_fd);
+ close(sh.tmp_fd);
   return (EXIT_SUCCESS);
 }
