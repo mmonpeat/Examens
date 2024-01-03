@@ -75,9 +75,10 @@ int is_pipe(t_micro *sh, char **av, char **env)
   {
     close(sh->fd[1]);
     close(sh->tmp_fd);
-    //sh->tmp_fd = sh->fd[0];
-	  sh->tmp_fd = dup(0);
+    sh->tmp_fd = sh->fd[0];
+	//sh->tmp_fd = dup(0);
   }
+	close(sh->tmp_fd);
   return (EXIT_SUCCESS);
 }
 
