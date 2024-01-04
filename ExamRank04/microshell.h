@@ -18,4 +18,11 @@ typedef struct s_micro
   int tmp_fd;
 } t_micro;
 
+int main(int ac, char **av, char **env);
+void is_cd(char **av, char **env);
+int no_pipe(t_micro *sh, char **av, char **env);
+int is_pipe(t_micro *sh, char *av, char **env);
+int ft_executor(t_micro *sh, char **av, char **env);
+int fd_putstr(int fd, char *str);
+
 #endif
