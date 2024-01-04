@@ -57,7 +57,7 @@ int no_pipe(t_micro *sh, char **av, char **env)
   else
   {
     close(sh->tmp_fd);
-    while (sh->n_p-- > 0)
+    while (sh->num_pross-- > 0)
       waitpid(-1, NULL, WUNTRACED);
     sh->tmp_fd = dup(0);
     sh->num_pross = 0;
