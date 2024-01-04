@@ -51,7 +51,7 @@ int no_pipe(t_micro *sh, char **av, char **env)
       return (E_EXIT);
   if (!sh->pid)
   {
-    if (ft_execute(sh, av, env))
+    if (ft_executor(sh, av, env))
       return (E_EXIT);
   }
   else
@@ -77,7 +77,7 @@ int is_pipe(t_micro *sh, char **av, char **env)
     dup2(sh->fd[1], 1);
     close(sh->fd[0]);
     close(sh->fd[1]);
-    if (ft_execute(sh, av, env))
+    if (ft_executor(sh, av, env))
       return (E_EXIT);
   }
   else
@@ -89,7 +89,7 @@ int is_pipe(t_micro *sh, char **av, char **env)
   return (EXIT_SUCCESS);
 }
 
-int ft_execute(t_micro *sh, char **av, char **env)
+int ft_executor(t_micro *sh, char **av, char **env)
 {
   av[sh->i] = NULL;
   dup2(sh->tmp_fd, 0);
