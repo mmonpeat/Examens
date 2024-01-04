@@ -12,7 +12,7 @@
 typedef struct s_micro
 {
   int i;
-  int n_p;
+  int num_pross;
   int pid;
   int fd[2];
   int tmp_fd;
