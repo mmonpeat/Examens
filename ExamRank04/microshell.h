@@ -6,9 +6,6 @@
 #include <sys/wait.h>
 #include <stdio.h>
 
-# define E_EXIT  1
-# define ERROR   -1
-
 typedef struct s_micro
 {
   int i;
