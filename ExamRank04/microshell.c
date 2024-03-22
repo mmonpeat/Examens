@@ -3,7 +3,6 @@
 int main(int ac, char **av, char **env)
 {
   t_micro sh;
-
   (void)ac;
   sh.i = 0;
   sh.num_pross = 0;
@@ -19,12 +18,12 @@ int main(int ac, char **av, char **env)
     else if (sh.i && (!av[sh.i] || !strcmp(av[sh.i], ";")))
     {
       if (no_pipe(&sh, av, env))
-        return (E_EXIT);
+        return (1);
     }
     else if (sh.i && !strcmp(av[sh.i], "|"))
     {
       if (is_pipe(&sh, av, env))
-        return (E_EXIT);
+        return (1);
     }
   }
  close(sh.tmp_fd);
@@ -35,7 +34,7 @@ void  is_cd(t_micro *sh, char **av)
 {
   if (sh->i != 2)
     fd_putstr(2, "error: cd: bad arguments\n");
-  else if (chdir(av[1]) == ERROR)
+  else if (chdir(av[1]) == -1)
   {
     fd_putstr(2, "error: cd: cannot change directory to ");
     fd_putstr(2, av[1]);
@@ -47,12 +46,12 @@ int no_pipe(t_micro *sh, char **av, char **env)
 {
   sh->num_pross++;
   sh->pid = fork();
-  if (sh->pid == ERROR)
-      return (E_EXIT);
+  if (sh->pid == -1)
+      return (1);
   if (!sh->pid)
   {
     if (ft_executor(sh, av, env))
-      return (E_EXIT);
+      return (1);
   }
   else
   {
@@ -70,15 +69,15 @@ int is_pipe(t_micro *sh, char **av, char **env)
   sh->num_pross++;
   pipe(sh->fd);
   sh->pid = fork();
-  if (sh->pid == ERROR)
-    return (E_EXIT);
+  if (sh->pid == -1)
+    return (1);
   if (!sh->pid)
   {
     dup2(sh->fd[1], 1);
     close(sh->fd[0]);
     close(sh->fd[1]);
     if (ft_executor(sh, av, env))
-      return (E_EXIT);
+      return (1);
   }
   else
   {
@@ -98,7 +97,7 @@ int ft_executor(t_micro *sh, char **av, char **env)
   fd_putstr(2, "error: cannot execute ");
   fd_putstr(2, av[0]);
   fd_putstr(2, "\n");
-  return (E_EXIT);
+  return (1);
 }
 
 int fd_putstr(int fd, char *str)
