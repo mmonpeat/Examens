@@ -33,4 +33,3 @@ class Warlock
 		void launchSpell(const std::string spell, ATarget &target);
 };
 
-//#endif

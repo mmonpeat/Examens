@@ -1,9 +1,7 @@
 #include "Dummy.hpp"
 
-Dummy::Dummy()
-{
-	this->type = "Target Practice Dummy";
-}
+Dummy::Dummy(): ATarget("Target Practice Dummy")
+{}
 Dummy::~Dummy()
 {}
 
