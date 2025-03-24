@@ -14,7 +14,7 @@ Warlock &Warlock::operator=(const Warlock &obj)
 	return (*this);
 }
 
-Warlock::Warlock(std::string name, std::string title): name(name), title(title)
+Warlock::Warlock(const std::string &name, const std::string &title): name(name), title(title)
 {
 	std::cout << name << ": This looks like another boring day." << std::endl;
 }
