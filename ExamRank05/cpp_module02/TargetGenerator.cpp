@@ -21,7 +21,7 @@ TargetGenerator::~TargetGenerator()
                 delete it->second;
 }
 
-void TargetGenerator::learnTargetType(const ATarget *spell)
+void TargetGenerator::learnTargetType(ATarget *spell)
 {
         std::map<std::string, ATarget *>::iterator it = array.find(spell->getType());
 
