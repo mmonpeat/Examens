@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <string>
+#include <map>
 
 class Warlock
 {
