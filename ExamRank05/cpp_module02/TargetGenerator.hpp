@@ -17,7 +17,7 @@ class TargetGenerator
                 TargetGenerator(void);
                 ~TargetGenerator(void);
 
-                void learnTargetType(const ATarget *spell);
+                void learnTargetType(ATarget *spell);
                 void forgetTargetType(const std::string name);
                 ATarget* createTarget(std::string const &name);
 };
