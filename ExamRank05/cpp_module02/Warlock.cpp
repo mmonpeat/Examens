@@ -45,7 +45,7 @@ void Warlock::introduce() const
 	std::cout << name << ": I am " << name << ", " << title << "!" << std::endl;
 }
 
-void Warlock::learnSpell(const ASpell *spell)
+void Warlock::learnSpell(ASpell *spell)
 {
 	std::map<std::string, ASpell *>::iterator it = array.find(spell->getName());
 
@@ -65,7 +65,7 @@ void Warlock::forgetSpell(const std::string name)
 	}
 }
 
-void Warlock::launchSpell(const std::string name, ATarget &target)
+void Warlock::launchSpell(const std::string name, const ATarget &target)
 {
 	std::map<std::string, ASpell *>::iterator it = array.find(name);
 
