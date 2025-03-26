@@ -26,12 +26,12 @@ Warlock::~Warlock()
 
 const std::string &Warlock::getName() const
 {
-	return (name);
+	return (this->name);
 }
 
 const std::string &Warlock::getTitle() const
 {
-	return (title);
+	return (this->title);
 }
 
 void Warlock::setTitle(const std::string &title)
