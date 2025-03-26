@@ -1,6 +1,6 @@
 #include "Warlock.hpp"
 
-Warlock::Warlock(void) {}
+Warlock::Warlock() {}
 
 Warlock::Warlock(const Warlock &obj)
 {
@@ -26,12 +26,12 @@ Warlock::~Warlock()
 
 const std::string &Warlock::getName() const
 {
-	return (this->name);
+	return (name);
 }
 
 const std::string &Warlock::getTitle() const
 {
-	return (this->title);
+	return (title);
 }
 
 void Warlock::setTitle(const std::string &title)
