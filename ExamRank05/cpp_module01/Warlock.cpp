@@ -47,8 +47,6 @@ void Warlock::introduce() const
 
 void Warlock::learnSpell(ASpell *spell)
 {
-	if (!spell)
-		return;
 	std::map<std::string, ASpell *>::iterator it = array.find(spell->getName());
 
 	if (it == array.end())
