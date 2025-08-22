@@ -1,0 +1,7 @@
+https://old.chuidiang.org/clinux/sockets/sockets_simp.php
+
+Funcions:
+1.socket() -> l'extrem d'una connexió, cal tancar close(fdsock)
+2.bind()   -> lliga el socket a una IP/port local
+3.listen() -> Fa que el socket esperi a rebre connexions
+4.accept() -> Accepta una connexió entrant. Retorna el fd per parlar amb el client. (ultima var es socklen_t len)
