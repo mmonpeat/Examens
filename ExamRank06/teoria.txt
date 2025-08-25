@@ -1,7 +1,77 @@
 https://old.chuidiang.org/clinux/sockets/sockets_simp.php
+detalles del servidor
 
 Funcions:
-1.socket() -> l'extrem d'una connexió, cal tancar close(fdsock)
+1.socket() -> dona l'extrem d'una connexió lliure, i retorna un fd soccket descriptor, cal tancar close(fdsock)
 2.bind()   -> lliga el socket a una IP/port local
 3.listen() -> Fa que el socket esperi a rebre connexions
 4.accept() -> Accepta una connexió entrant. Retorna el fd per parlar amb el client. (ultima var es socklen_t len)
+
+1. socket <unistd.h> o <sys/socket.h>
+
+  	int sockfd = socket(domain, type, protocol); //socket(AF_INET, SOCK_STREAM, 0);
+  	
+	domain -> domini, tipus d'adreca per comunicar
+		AF_INET: IPv4, adreces com 127.0.0.1, 192.168.1.5, etc.
+		AF_INET6: IPv6 (adreces com ::1)
+		AF_UNIX: sockets locals (fitxers al sistema)
+	type -> tipus de comunicació
+		SOCK_STREAM: connexió orientada, necessites conctar-te abans d'enviar dades
+		SOCK_DGRAM: comunicació sense connexió, fa servir UDP
+		SOCK_RAW: accés brut a IP(poc comú, baix nivell)
+	protocol -> habitualment 0
+		En la gran majoria de casos, posem 0 i el sistema operatiu tria el protocol per defecte:
+			- Si has posat AF_INET + SOCK_STREAM → tria automàticament TCP
+			- Si has posat AF_INET + SOCK_DGRAM → tria automàticament UDP
+	
+	Gestiones amb: bind, listen, accept, connect, send, recv, etc...
+   1.1 Tanca amb close(sockfd); <unistd.h>
+
+2. bind <sys/socket.h>
+
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+
+Exemple:
+struct sockaddr_in serv_addr;
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_port = htons(8080); // port 8080
+serv_addr.sin_addr.s_addr = INADDR_ANY; // qualsevol IP local
+
+bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+
+
+3. listen <sys/socket.h>
+Indica que vols rebre connexions (servidor). Converteix el socket en mode passiu: espera connexions entrants.
+Indiques quantes connexions poden estar en cua d’espera (amb backlog).
+
+int listen(int sockfd, int backlog);
+listen(sockfd, SOMAXCONN); // "Deixa'm escoltar el màxim de connexions que puguis aguantar."
+SOMAXCONN és una constant que diu "el màxim nombre de connexions pendents" que la teva listen() pot acceptar.
+Exemple pràctic:
+Si arriben 300 connexions gairebé al mateix temps:
+	Si el sistema té SOMAXCONN = 128, les primeres 128 entraran a la cua.
+	Les altres 172 probablement seran rebutjades.
+
+4. accept <sys/socket.h>
+Accepta una connexió entrant d'un client. Retorna un nou file descriptor per parlar amb aquell client.
+El sockfd original continua escoltant (pots fer més accept() després).
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+
+Exemple:
+struct sockaddr_in client_addr;
+socklen_t client_len = sizeof(client_addr);
+
+int clientfd = accept(sockfd, (struct sockaddr*)&client_addr, &client_len);
+
+
+
+
+sockaddr_in
+
+AF_INET
+SOCK_STREAM
+
+FD_ZERO
+FD_SET
+FD_ISSET
+FD_CLR
