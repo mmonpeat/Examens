@@ -75,3 +75,5 @@ FD_ZERO
 FD_SET
 FD_ISSET
 FD_CLR
+
+Four macros are provided to manipulate the sets. FD_ZERO() clears a set. FD_SET() and FD_CLR() respectively add and remove a given file descriptor from a set. FD_ISSET() tests to see if a file descriptor is part of the set; this is useful after select() returns. 
