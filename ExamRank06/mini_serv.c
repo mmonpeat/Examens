@@ -1,63 +1,47 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+//no pots declarar nmacros ni llibreria (#define)
 
-void fatal_error()
-{
-	write(2, "Fatal error\n", 12);
-	exit(1);
-}
+//arg != 2 -> retorna Wrong num arg exit(1)
+//si socket, bind, listen va malament -> retona fatal eror exit(1)
+//si no pots guardar mem -> retorna fatal error exit(1)
+//non bloking bind
+//bind i socket en localhost
 
-int main(int ac, char **av)
-{
-	int sockfd, connfd;
-	socklen_t addrlen;
-	struct sockaddr_in servaddr, cliaddr;
-	
-	if (ac != 2)
-	{
-		write(2, "Wrong number of arguments\n", 26);
-		exit(1);	
-	}
-	// socket create and verification 
-	sockfd = socket(AF_INET, SOCK_STREAM, 0); 
-	if (sockfd == -1)
-		fatal_error();
-	else
-		printf("Socket successfully created..\n"); 
-	bzero(&servaddr, sizeof(servaddr)); 
+//si el client no llegeix el msg NO el pots desconectar
 
-	// assign IP, PORT 
-	servaddr.sin_family = AF_INET; 
-	servaddr.sin_addr.s_addr = htonl(2130706433); //127.0.0.1
-	servaddr.sin_port = htons(atoi(av[1])); 
-  
-	// Binding newly created socket to given IP and verification 
-	if ((bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr))) != 0)
-		fatal_error();
-	else
-		printf("Socket successfully binded..\n");
+//el fd que rebs del socket (crec) ha d'estar preparat per fer recv o send per bloquejar, si select no s'ha cridat abans del recv o send. pero si el select esta abans del recv o send no boqueja res. ????
 
-	if (listen(sockfd, 10) != 0)
-		fatal_error();
-	
-	//aquí va el loop?
-	while (1)
-	{
-		addrlen = sizeof(cliaddr);
-		connfd = accept(sockfd, (struct sockaddr *)&cliaddr, &addrlen);
-		if (connfd < 0)
-			fatal_error();
-    		else
-        		printf("server acccept the client...\n");
-		//commenca la comunicació NO??
-		printf("comunicat...............mostra sockfd: %d\nstruct servaddr.sin_port: %d\n", sockfd, servaddr.sin_port);
-	}
-	close(sockfd);
-	return (0);
-}
+// client té id, el primer client id = 0, segon cli id = 1, ... 
+// mgs s'envia a tos els clients conectats al servidor "server: client %d just arrived\n" %d es subtitues per el id del client, 0, 1, 2
+// clients han de poder enviar msg al seerver, no chal check que s'envia
+// msg pot tenir varis \n, devant de cada linea ha d'anar client %d
+// client id = 3 es deconecta del servidor s'envia un msg a tots els clients conectats al servidor : "server: client %d just left\n"
+
+// send utilitzar nomes quan el socket esta connectat. send( no te flags com args) pero write si.
+
+//macros:
+	//FD_ZERO() --> nateja el conjunt (no nateja el fd)
+	//DF_SET() --> afegeix el fd al conjunt en el que hi ha altres clients
+	//FD_CLR() --> elimina el fd del conjunt
+	//FD_ISSET() --> mira si un fd es part del set(conjunt) al enviar msg puc fer un loop del per conprovar si es part del set i enviar msg sino hoo es surt del loop ino envia res pero seguiria en el loop del set, de socketfd. util despres de selects() ns com va exactament
+
+//#include <sys/socket.h>
+//main(ac, av)
+//check num arg != 2 -> retorna Wrong num arg exit(1)
+//fdsocket = socket() AF_INET 127.0.0.1 SOCK_STREAM, 0 pero tria automaticament TCP, segons les deciscions de sock stream
+//bind() .sin_addr.s_addr(atoi (port)) non-blocking all ip. si error fatal err exit 1
+//loop infinit
+	//listen(sockfd, buffer(num connex que aguanti)) o SOMAXCONN
+	//si no funciona alguna fatal error
+	//pots usar send i recv (ns que com suposso send per enviar msg, recv ns)
+	//accept() i cres el sockaddr_in client abans
+	//FD_ZERO() natejar set potser hauria de ser abans loop????
+	//if ( !FD_ISSET() fdsocket) no es part dels set
+		//FD_SET () affegeix al set
+		//enviar msg al grup de "server: client %d just arrived\n" 
+		//fer funció send msg == > loop (fd_isset( comprovar tots i enviar als que estiguin)
+		//poder enviar msg generals amb funcio send_msg
+		// msg pot tenir varis \n, devant de cada linea ha d'anar client %d
+	//else if ha marxat o vol maxar desconectar -lo com se que marxa si fa exit o control c?? per borrar-lo faig FD_CLR()
+		//s'enviaa a tots els clients "server: client %d just left\n"
+//close de sdsocket
+//return (0);

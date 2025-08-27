@@ -21,9 +21,38 @@ Funcions:
 		SOCK_RAW: accés brut a IP(poc comú, baix nivell)
 	protocol -> habitualment 0
 		En la gran majoria de casos, posem 0 i el sistema operatiu tria el protocol per defecte:
-			- Si has posat AF_INET + SOCK_STREAM → tria automàticament TCP
-			- Si has posat AF_INET + SOCK_DGRAM → tria automàticament UDP
-	
+			- Si has posat AF_INET + SOCK_STREAM → tria automàticament TCP // protocol bassat en connexions, mes fiable, menys rapid
+			- Si has posat AF_INET + SOCK_DGRAM → tria automàticament UDP //no conexxions, mes rapid, menys fiable
+			Estas son las principales diferencias entre el TCP y el UDP:
+
+			Tipo de conexión
+				TCP: Requiere una conexión establecida antes de transmitir datos
+				UDP: No se necesita conexión para iniciar y finalizar una transferencia de datos
+
+			Secuencia de datos
+				TCP: Puede secuenciar datos (enviar en un orden específico)
+				UDP: No puede secuenciar u ordenar datos
+
+			Retransmisión de datos
+				TCP: Puede retransmitir datos si no llegan los paquetes
+				UDP: Sin retransmisión de datos. Los datos perdidos no se pueden recuperar
+
+			Entrega
+				TCP: La entrega está garantizada
+				UDP: La entrega no está garantizada
+
+			Comprobar si hay errores
+				TCP: Una exhaustiva comprobación de errores garantiza que los datos lleguen en buen estado
+				UDP: La comprobación de errores cubre los aspectos básicos, pero puede que no evite todos los errores
+
+			Emisiones	
+				TCP: No es compatible
+				UDP: Sí es compatible
+
+			Velocidad
+				TCP: Lenta, pero entrega los datos completos
+				UDP: Rápida, pero existe el riesgo de que los datos se entreguen incompletos
+
 	Gestiones amb: bind, listen, accept, connect, send, recv, etc...
    1.1 Tanca amb close(sockfd); <unistd.h>
 
@@ -67,9 +96,6 @@ int clientfd = accept(sockfd, (struct sockaddr*)&client_addr, &client_len);
 
 
 sockaddr_in
-
-AF_INET
-SOCK_STREAM
 
 FD_ZERO
 FD_SET
