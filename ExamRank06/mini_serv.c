@@ -1,29 +1,3 @@
-//no pots declarar nmacros ni llibreria (#define)
-
-//arg != 2 -> retorna Wrong num arg exit(1)
-//si socket, bind, listen va malament -> retona fatal eror exit(1)
-//si no pots guardar mem -> retorna fatal error exit(1)
-//non bloking bind
-//bind i socket en localhost
-
-//si el client no llegeix el msg NO el pots desconectar
-
-//el fd que rebs del socket (crec) ha d'estar preparat per fer recv o send per bloquejar, si select no s'ha cridat abans del recv o send. pero si el select esta abans del recv o send no boqueja res. ????
-
-// client té id, el primer client id = 0, segon cli id = 1, ... 
-// mgs s'envia a tos els clients conectats al servidor "server: client %d just arrived\n" %d es subtitues per el id del client, 0, 1, 2
-// clients han de poder enviar msg al seerver, no chal check que s'envia
-// msg pot tenir varis \n, devant de cada linea ha d'anar client %d
-// client id = 3 es deconecta del servidor s'envia un msg a tots els clients conectats al servidor : "server: client %d just left\n"
-
-// send utilitzar nomes quan el socket esta connectat. send( no te flags com args) pero write si.
-
-//macros:
-	//FD_ZERO() --> nateja el conjunt (no nateja el fd)
-	//DF_SET() --> afegeix el fd al conjunt en el que hi ha altres clients
-	//FD_CLR() --> elimina el fd del conjunt
-	//FD_ISSET() --> mira si un fd es part del set(conjunt) al enviar msg puc fer un loop del per conprovar si es part del set i enviar msg sino hoo es surt del loop ino envia res pero seguiria en el loop del set, de socketfd. util despres de selects() ns com va exactament
-
 //#include <sys/socket.h>
 //main(ac, av)
 //check num arg != 2 -> retorna Wrong num arg exit(1)
@@ -45,3 +19,120 @@
 		//s'enviaa a tots els clients "server: client %d just left\n"
 //close de sdsocket
 //return (0);
+
+#define MAX_CLI 2000
+#define MAX_BUF 1000000
+
+typedef struct s_client {
+	int id;
+	char msg[MAX_BUF];
+} t_client;
+
+t_client all[MAX_CLI];
+char str[MAX_BUF + 100], rec[MAX_BUF];
+
+int sockfd = -1, maxfd = -1, gid = 0;
+fd_set conj, rd, wr;
+
+void err(char *msg)
+{
+	if (!msg)
+		write(2, "Fatal error\n", strlen("Fatal error\n"));
+	else
+		write(2, msg, strlen(msg));
+	if (sockfd != -1)
+		close(sockfd);
+	exit(1);
+}
+
+void send_all(int except)
+{
+	for (int fd = 0; fd <= maxfd; fd++)
+	{
+		if (FD_ISSET(fd, &wr) && fd != except)
+			send(fd, str, strlen(str), 0);
+	}
+}
+
+int main(int ac, char **av)
+{
+	int connfd = -1;
+	struct sockaddr_in servaddr;
+	sockfd = -1;
+
+	if (ac != 2)
+		err("Wrong number of arguments\n");
+	sockfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (sockfd == -1)
+		err(NULL);
+	bzero(&servaddr, sizeof(servaddr));
+
+	FD_ZERO(&conj);
+	FD_SET(sockfd, &conj);
+	maxfd = sockfd;
+
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_addr.s_addr = htonl(2130706433); //127.0.0.1
+	servaddr.sin_port = htons(atoi(av[1]));
+
+	memset(all, 0, sizeof(all));
+	if ((bind(sockfd, (const struct sockaddr *)&servaddr, sizeof(servaddr))) != 0)
+		err(NULL);
+	if (listen(sockfd, 100) != 0)
+		err(NULL);
+	while (1)
+	{
+		conj = rd = wr;
+		if (select(maxfd + 1, &rd, &wr, 0, 0) <= 0)
+			continue ;
+		for (int fd = 0; fd <= maxfd; fd++)
+		{
+			if (!FD_ISSET(fd, &rd))
+				continue ;
+			if (fd == sockfd)
+			{
+				struct sockaddr_in cli;
+				socklen_t len;
+				len = sizeof(cli);
+				bzero(&cli, sizeof(cli));
+				connfd = accept(sockfd, (struct sockaddr *)&cli, &len);
+				if (connfd < 0)
+					continue ;
+				all[connfd].id = gid;
+				gid++;
+				if (maxfd < connfd)
+					maxfd = connfd;
+				FD_SET(connfd, &conj);
+				sprintf(str, "server: client %d just arrived\n", all[connfd].id);
+				send_all(connfd);
+			} else {
+				int ret = recv(fd, rec, 100, 0);
+				if (ret <= 0)
+				{
+					sprintf(str, "server: client %d just left\n", all[fd].id);
+					send_all(fd);
+					memset(all[fd].msg, '\0', sizeof(all[fd.msg]));
+					FD_CLR(fd, &conj);
+					close(fd);
+					break ;
+				} else {
+					rec[ret] = '\0';
+					for (int i = 0, j = strlen(all[fd].msg); i < ret; i++, j++) 
+					{
+						all[fd].msg[j] = rec[i];
+						if (all[fd].msg[j] == '\n')
+						{
+							all[fd].msg[j] = '\0';
+							sprintf(str, "client %d: %s\n", all[fd].id, all[fd].msg);
+							send_all(fd);
+							memset(all[fd].msg, '\0', sizeof(all[fd].msg));
+							j = -1;
+						}
+					}
+				}
+			}
+
+		}
+	}
+	return (0);
+}
